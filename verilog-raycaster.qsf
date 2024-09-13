@@ -47,8 +47,6 @@ set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
-set_global_assignment -name SYSTEMVERILOG_FILE screen.sv
-set_global_assignment -name SYSTEMVERILOG_FILE raycaster.sv
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name EDA_DESIGN_ENTRY_SYNTHESIS_TOOL "Design Compiler" -entity raycaster.sv
@@ -61,4 +59,15 @@ set_global_assignment -name EDA_INPUT_DATA_FORMAT EDIF -entity raycaster.sv -sec
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name SOURCE_FILE levels/8x8/simple.mem
+set_global_assignment -name SOURCE_FILE levels/8x8/multi.mem
+set_global_assignment -name SOURCE_FILE levels/8x8/hallway.mem
+set_global_assignment -name SOURCE_FILE levels/8x8/box.mem
+set_global_assignment -name SOURCE_FILE memory/sin_table.mem
+set_global_assignment -name SOURCE_FILE memory/sec_table.mem
+set_global_assignment -name SOURCE_FILE memory/osaka.mem
+set_global_assignment -name SOURCE_FILE memory/huohuo.mem
+set_global_assignment -name SOURCE_FILE memory/grass.mem
+set_global_assignment -name SYSTEMVERILOG_FILE screen.sv
+set_global_assignment -name SYSTEMVERILOG_FILE raycaster.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

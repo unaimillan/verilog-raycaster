@@ -89,16 +89,43 @@ def generate_texture(name: str, content: bytes):
         for i in range(len(content) // 3):
             fl.write(f'{(content[i])*(content[i+1])*(content[i]+2):x}\n')
 
+def generate_sv_texture(name: str, content: bytes):
+    txt_arr = []
+    for i in range(len(content) // 3):
+        txt_arr.append(f"'h{(content[i])*(content[i+1])*(content[i]+2):x}")
+    texture_str = '{' + ','.join(txt_arr) + '}'
+    TEMPLATE = f"""`define TEX_X 256
+`define TEX_Y 256
+
+typedef logic[7:0] uint8_t;
+
+typedef struct packed {{
+    uint8_t b;
+    uint8_t g;
+    uint8_t r;
+}} color_t;
+
+typedef color_t texture_t [(TEX_X*TEX_Y)-1:0];
+
+module {name}(input coord, output color_t color);
+    texture_t texture = '{texture_str};
+    assign color = texture[coord];
+endmodule
+"""
+    with open(MEMORY_DIR / (name + '.sv'), 'w') as fl:
+        fl.write(TEMPLATE)
+
 def generate_textures():
     for texture_path in TEXTURES_DIR.glob("*.bmp"):
         texture = load_bmp(texture_path)
         generate_texture(texture_path.stem, texture)
+        # generate_sv_texture(texture_path.stem, texture)
         log.info(f"Texture {texture_path} converted")
 
 
 def main():
     MEMORY_DIR.mkdir(exist_ok=True)
-    # generate_tables()
+    generate_tables()
     generate_textures()
 
 

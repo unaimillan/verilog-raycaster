@@ -126,7 +126,7 @@ module raycaster (
     localparam V_RES = 480;  // vertical screen resolution
 
     logic frame;  // high for one tick at the start of vertical blanking
-    always_comb frame = (sy == V_RES && sx == 0);
+    assign frame = (sy == V_RES && sx == 0);
 
     /* --------------------------- trig LUT --------------------------- */
     // feature idea: lerp between entries

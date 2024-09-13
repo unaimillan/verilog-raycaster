@@ -228,19 +228,22 @@ module raycaster (
 
     localparam TEX_X = `TEX_X;
     localparam TEX_Y = `TEX_Y;
+    localparam TEX_WIDTH = TEX_X*TEX_Y;
 
-    typedef color_t texture_t [(TEX_X*TEX_Y)-1:0];
-
+    typedef color_t texture_t [TEX_WIDTH-1:0];
     texture_t textures[2:0];
-
-    texture_t texture_osaka;
-    assign textures[CELL_OSAKA-1] = texture_osaka;
+    
+    logic [2:0][7:0] raw_osaka  [TEX_WIDTH-1:0];
+    logic [2:0][7:0] raw_grass  [TEX_WIDTH-1:0];
+    logic [2:0][7:0] raw_huohuo [TEX_WIDTH-1:0];
 
     initial begin
-        $readmemh("memory/osaka.mem", texture_osaka);
-        $readmemh("memory/osaka.mem", textures[CELL_OSAKA-1]);
-        $readmemh("memory/grass.mem", textures[CELL_GRASS-1]);
-        $readmemh("memory/huohuo.mem", textures[CELL_HUOHUO-1]);
+        // $readmemh("memory/osaka.mem", raw_osaka);
+        // $readmemh("memory/grass.mem", raw_grass);
+        // $readmemh("memory/huohuo.mem", raw_huohuo);
+        textures[CELL_OSAKA-1] = raw_osaka;
+        textures[CELL_GRASS-1] = raw_grass;
+        textures[CELL_HUOHUO-1] = raw_huohuo;
     end
 
     /* --------------------------- Movement --------------------------- */

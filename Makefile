@@ -5,8 +5,8 @@ SDL_LDFLAGS = `sdl2-config --libs`
 gen: gen.py
 	python3 gen.py
 
-build: raycaster.sv
-	verilator ${VFLAGS} -I.. -cc $< --exe simulate.cpp -o raycaster \
+build: src/rtl/raycaster.sv
+	verilator ${VFLAGS} -I.. -Isrc/rtl -cc $< --exe src/sim/simulate.cpp -o raycaster \
 		-CFLAGS "${SDL_CFLAGS}" -LDFLAGS "${SDL_LDFLAGS}"
 	make -C ./obj_dir -f Vraycaster.mk
 

@@ -1,83 +1,14 @@
-`default_nettype none
-`timescale 1ns / 1ps
+`include "config.svh"
+`include "types.svh"
+`include "tools.sv"
 
-`define LEVEL       "levels/8x8/multi.mem"
-`define MAP_X       8  
-`define MAP_Y       8 
-`define MAP_SCALE_X 64.0
-`define MAP_SCALE_Y 64.0
-`define MAP_SCALE_Z 64.0
-`define MAP_WRAP
-
-`define TEX_X 256
-`define TEX_Y 256
-
-`define PLAYER_SPEED      2.0
-`define PLAYER_TURN_SPEED 0.05 // radians
-`define PLAYER_INIT_X     (MAP_SCALE_X * MAP_X / 2)
-`define PLAYER_INIT_Y     (MAP_SCALE_Y * MAP_Y / 2)
-`define PLAYER_INIT_ANGLE 0.0
-
-`define FOV (PI / 3) // 60deg
-
-`define TRIG_SAMPLES 256
-
-`define MAP_OVERLAY
-`define OVERLAY_SCALE_X     0.5
-`define OVERLAY_SCALE_Y     0.5
-`define OVERLAY_OFFSET_X    0.0
-`define OVERLAY_OFFSET_Y    0.0
-`define OVERLAY_PLAYER_SIZE 5.0
-
-// Q16.16 fixed point number
-typedef logic signed [31:0] fix_t;
-
-typedef logic[7:0] uint8_t;
-typedef logic[15:0] uint16_t;
-typedef logic[31:0] uint32_t;
-
-typedef struct packed {
-    fix_t x;
-    fix_t y;
-} vec_t;
-
-typedef enum logic[1:0] {
-    CELL_AIR,
-    CELL_OSAKA,
-    CELL_GRASS,
-    CELL_HUOHUO
-} cell_t;
-
-typedef struct packed {
-    logic is_vert;
-    fix_t inv_dist;
-    fix_t distance;
-    vec_t pos;
-    cell_t cell_type;
-} ray_t;
-
-typedef struct packed {
-    logic is_vert;
-    fix_t height;
-    fix_t inv_height;
-    vec_t ray_pos;
-    fix_t ray_angle;
-    cell_t cell_type;
-} line_t;
-
-typedef struct packed {
-    uint8_t b;
-    uint8_t g;
-    uint8_t r;
-} color_t;
-
-function fix_t to_fix(input real_num);
+function fix_t to_fix(input real real_num);
     begin
         to_fix = fix_t'($rtoi(real_num * 2**16));
     end
 endfunction
 
-function to_real(input fix_t fix_num);
+function real to_real(input fix_t fix_num);
     begin
         to_real = $itor(fix_num) / 2**16;
     end
@@ -94,6 +25,7 @@ function logic near(input fix_t a, b, tolerance = to_fix(0.01));
         near = a > b - tolerance && a < b + tolerance;
     end
 endfunction
+
 
 module raycaster (
     input  wire logic clk_in,        // pixel clock
@@ -230,7 +162,6 @@ module raycaster (
     localparam TEX_Y = `TEX_Y;
     localparam TEX_WIDTH = TEX_X*TEX_Y;
 
-    typedef color_t texture_t [TEX_WIDTH-1:0];
     texture_t textures[2:0];
     
     logic [2:0][7:0] raw_osaka  [TEX_WIDTH-1:0];
@@ -241,9 +172,12 @@ module raycaster (
         // $readmemh("memory/osaka.mem", raw_osaka);
         // $readmemh("memory/grass.mem", raw_grass);
         // $readmemh("memory/huohuo.mem", raw_huohuo);
-        textures[CELL_OSAKA-1] = raw_osaka;
-        textures[CELL_GRASS-1] = raw_grass;
-        textures[CELL_HUOHUO-1] = raw_huohuo;
+        // textures[CELL_OSAKA-1] = raw_osaka;
+        // textures[CELL_GRASS-1] = raw_grass;
+        // textures[CELL_HUOHUO-1] = raw_huohuo;
+        textures[CELL_OSAKA-1] = load_bmp("textures/osaka.bmp");
+        textures[CELL_GRASS-1] = load_bmp("textures/grass.bmp");
+        textures[CELL_HUOHUO-1] = load_bmp("textures/huohuo.bmp");
     end
 
     /* --------------------------- Movement --------------------------- */

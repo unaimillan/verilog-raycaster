@@ -1,5 +1,4 @@
-`default_nettype none
-`timescale 1ns / 1ps
+`include "config.svh"
 
 /**
  * 640x480p60 screen

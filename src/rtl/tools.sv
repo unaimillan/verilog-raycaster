@@ -25,8 +25,8 @@ begin
     width = {<<8{width}};
     $fread(height, fd);
     height = {<<8{height}};
-    if (width != TEX_X || height != TEX_Y) begin
-        $display("image is must be %dx%d, found %dx%d.", TEX_X, TEX_Y,
+    if (width != `TEX_X || height != `TEX_Y) begin
+        $display("image is must be %dx%d, found %dx%d.", `TEX_X, `TEX_Y,
         width, height);
         $finish;
     end

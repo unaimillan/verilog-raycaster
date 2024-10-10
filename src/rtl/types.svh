@@ -45,6 +45,6 @@ typedef struct packed {
     uint8_t r;
 } color_t;
 
-typedef color_t texture_t [TEX_WIDTH-1:0];
+typedef color_t texture_t [`TEX_WIDTH-1:0];
 
 `endif // `ifndef TYPES_SVH

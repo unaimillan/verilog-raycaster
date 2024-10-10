@@ -14,7 +14,7 @@
 
 `define TEX_X 256
 `define TEX_Y 256
-`define TEX_WIDTH (TEX_X*TEX_Y)
+`define TEX_WIDTH (`TEX_X*`TEX_Y)
 
 `define PLAYER_SPEED      2.0
 `define PLAYER_TURN_SPEED 0.05 // radians

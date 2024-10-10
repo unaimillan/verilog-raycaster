@@ -7,7 +7,7 @@ gen: gen.py
 
 build: src/rtl/raycaster.sv
 	verilator ${VFLAGS} -I.. -Isrc/rtl -cc $< --exe src/sim/simulate.cpp -o raycaster \
-		-CFLAGS "${SDL_CFLAGS}" -LDFLAGS "${SDL_LDFLAGS}"
+		-CFLAGS "${SDL_CFLAGS}" -LDFLAGS "${SDL_LDFLAGS}" --timescale 1ns/1ps
 	make -C ./obj_dir -f Vraycaster.mk
 
 run:

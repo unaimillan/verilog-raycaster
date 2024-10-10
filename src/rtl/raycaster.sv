@@ -30,7 +30,7 @@ endfunction
 module raycaster (
     input  wire logic clk_in,        // pixel clock
     input  wire logic rst_in,        // reset pin
-    input  wire logic[3:0] mvmt_in,  // player movement keys
+    input  wire logic [3:0] mvmt_in, // player movement keys
     output      logic [9:0] sx_out,  // horizontal screen position
     output      logic [9:0] sy_out,  // vertical screen position
     output      logic de_out,        // data enable (low in blanking interval)
@@ -136,7 +136,7 @@ module raycaster (
 
     cell_t map [MAP_Y-1:0][MAP_X-1:0];
     initial begin
-        // $readmemh(`LEVEL, map);
+        $readmemh(`LEVEL, map);
     end
 
     function logic in_bounds(input vec_t pos);
@@ -409,7 +409,7 @@ module raycaster (
     line_t lines[H_RES-1:0];
     always_ff @(posedge clk_in) begin
         // render on new frame and movement change
-        if (frame && (|(mvmt_in) || is_first_frame)) begin
+        if (frame ) begin
             is_first_frame = 0;
             for (integer i = 0; i < H_RES; i++) begin
                 ray_t ray;

@@ -5,3 +5,5 @@ incremental_db
 output_files
 *.bak
 memory
+venv
+__pycache__

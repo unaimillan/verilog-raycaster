@@ -2,8 +2,8 @@ VFLAGS = -O3 --x-assign fast --x-initial fast --noassert
 SDL_CFLAGS = `sdl2-config --cflags`
 SDL_LDFLAGS = `sdl2-config --libs`
 
-gen: gen.py
-	python3 gen.py
+gen:
+	scripts/run_scripts.bash
 
 build: src/rtl/raycaster.sv
 	verilator ${VFLAGS} -I.. -Isrc/rtl -cc $< --exe src/sim/simulate.cpp -o raycaster \

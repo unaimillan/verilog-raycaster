@@ -2,25 +2,25 @@
 `include "types.svh"
 `include "tools.sv"
 
-function fix_t to_fix(input real real_num);
+function automatic fix_t to_fix(input real real_num);
     begin
         to_fix = fix_t'($rtoi(real_num * 2**16));
     end
 endfunction
 
-function real to_real(input fix_t fix_num);
+function automatic real to_real(input fix_t fix_num);
     begin
         to_real = $itor(fix_num) / 2**16;
     end
 endfunction
 
-function fix_t mult(input fix_t a, b);
+function automatic fix_t mult(input fix_t a, b);
     begin
         mult = 32'((48'(a * b)) >>> 16);
     end
 endfunction
 
-function logic near(input fix_t a, b, tolerance = to_fix(0.01));
+function automatic logic near(input fix_t a, b, tolerance = to_fix(0.01));
     begin
         near = a > b - tolerance && a < b + tolerance;
     end
@@ -73,7 +73,7 @@ module raycaster (
         $readmemh("memory/sec_table.mem", sec_table);
     end
 
-    function fix_t sin(input fix_t x);
+    function automatic fix_t sin(input fix_t x);
         fix_t quad = mult(x, to_fix(2 / PI));
         fix_t entry = mult(quad & 32'h0000ffff, to_fix(TRIG_SAMPLES));
         logic[$clog2(TRIG_SAMPLES)-1:0] index = 
@@ -87,8 +87,8 @@ module raycaster (
             endcase
         end
     endfunction
-    
-    function fix_t sec(input fix_t x);
+
+    function automatic fix_t sec(input fix_t x);
         fix_t quad = mult(x, to_fix(2 / PI));
         fix_t entry = mult(quad & 32'h0000ffff, to_fix(TRIG_SAMPLES));
         logic [$clog2(TRIG_SAMPLES)-1:0] index = entry[15+$clog2(TRIG_SAMPLES):16];
@@ -102,25 +102,25 @@ module raycaster (
         end
     endfunction
 
-    function fix_t cos(input fix_t x);
+    function automatic fix_t cos(input fix_t x);
         begin
             cos = sin(x + to_fix(PI/2));
         end
     endfunction
 
-    function fix_t csc(input fix_t x);
+    function automatic fix_t csc(input fix_t x);
         begin
             csc = sec(x + to_fix(3*PI/2));
         end
     endfunction
 
-    function fix_t tan(input fix_t x);
+    function automatic fix_t tan(input fix_t x);
         begin
             tan = mult(sin(x), sec(x));
         end
     endfunction
 
-    function fix_t cot(input fix_t x);
+    function automatic fix_t cot(input fix_t x);
         begin
             cot = mult(cos(x), csc(x));
         end
@@ -139,14 +139,14 @@ module raycaster (
         $readmemh(`LEVEL, map);
     end
 
-    function logic in_bounds(input vec_t pos);
+    function automatic logic in_bounds(input vec_t pos);
         begin
             in_bounds = pos.x >= to_fix(0) && pos.x < to_fix(MAP_X*MAP_SCALE_X) &&
                         pos.y >= to_fix(0) && pos.y < to_fix(MAP_Y*MAP_SCALE_Y);
         end
     endfunction
     
-    function cell_t cell_at(input vec_t pos);
+    function automatic cell_t cell_at(input vec_t pos);
         begin
             cell_at = map[(mult(pos.y, to_fix(1.0/MAP_SCALE_Y)) >> 16) % MAP_Y]
                          [(mult(pos.x, to_fix(1.0/MAP_SCALE_X)) >> 16) % MAP_X];
@@ -235,7 +235,7 @@ module raycaster (
 
     /* --------------------------- Raycasting --------------------------- */
 
-    function fix_t inv_sqrt(input fix_t x);
+    function automatic fix_t inv_sqrt(input fix_t x);
         fix_t threehalfs = to_fix(1.5);
         fix_t guess;
         begin
@@ -285,7 +285,7 @@ module raycaster (
         end
     endfunction
 
-    function logic[63:0] sq_dist(vec_t a, vec_t b);
+    function automatic logic[63:0] sq_dist(vec_t a, vec_t b);
         logic[63:0] run = 64'(a.x) - 64'(b.x);
         logic[63:0] rise = 64'(a.y) - 64'(b.y);
         begin
@@ -296,7 +296,7 @@ module raycaster (
     localparam logic[63:0] i64_MAX = 64'hefff_ffff_ffff_ffff;
     localparam logic[31:0] i32_MAX = 32'hefff_ffff;
 
-    function ray_t cast_ray(fix_t angle);
+    function automatic ray_t cast_ray(fix_t angle);
         vec_t h_ray, v_ray;
         vec_t h_ray_delta, v_ray_delta;
 
@@ -336,10 +336,12 @@ module raycaster (
                     h_ray.y += h_fuzz;
                     if (|cell_h) begin
                         h_sqdist = sq_dist(player, h_ray);
-                        break;
                     end
-                    h_ray.x += h_ray_delta.x;
-                    h_ray.y += h_ray_delta.y;
+                    else
+                    begin
+                        h_ray.x += h_ray_delta.x;
+                        h_ray.y += h_ray_delta.y;
+                    end
                 end
             end
 
@@ -371,10 +373,12 @@ module raycaster (
                     v_ray.x -= v_fuzz;
                     if (|cell_v) begin
                         v_sqdist = sq_dist(player, v_ray);
-                        break;
-                    end 
-                    v_ray.x += v_ray_delta.x;
-                    v_ray.y += v_ray_delta.y;
+                    end
+                    else
+                    begin
+                        v_ray.x += v_ray_delta.x;
+                        v_ray.y += v_ray_delta.y;
+                    end
                 end
             end
             

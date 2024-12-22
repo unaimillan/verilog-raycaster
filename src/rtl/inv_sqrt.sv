@@ -1,17 +1,39 @@
+`define INV_SQRT_SV
+
 `ifndef INV_SQRT_SV
 `define INV_SQRT_SV
 
 `include "config.svh"
+`include "types.svh"
 
-module inv_sqrt(
-    input logic fix_t x,
+function static fix_t mult(input fix_t a, b);
+begin
+    mult = 32'((48'(a * b)) >>> 16);
+end
+endfunction
+
+module inv_sqrt
+# (
+    parameter N_PIPE_STAGES = 2
+) (
+    input fix_t x,
     output fix_t result
 );
-fix_t threehalfs; //= (1.5);
+fix_t threehalfs = 32'sh0001_8000; //= (1.5);
 fix_t guess;
 
-always_comb begin : inv_sqrt_i
+fix_t stages [0:N_PIPE_STAGES];
 
+assign stages[0] = guess;
+
+generate
+    genvar i;
+    for (i = 1; i < N_PIPE_STAGES; i++) begin : guess_for
+        assign stages[i] = mult(stages[i-1], threehalfs - mult(x >>> 1, mult(stages[i-1], stages[i-1])));
+    end
+endgenerate
+
+always_comb begin : inv_sqrt_i
     if      (x[30]) guess = 32'sh00000034;
     else if (x[29]) guess = 32'sh00000049;
     else if (x[28]) guess = 32'sh00000068;
@@ -44,17 +66,17 @@ always_comb begin : inv_sqrt_i
     else if (x[1])  guess = 32'sh001279a7;
     else            guess = 32'sh00200000;
     // Newton's method
-    guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
-    guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
-    guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
-    guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
-    guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
-    guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
-    guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
-    guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
-    guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
-    guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
-    result = guess;
+    // guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
+    // guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
+    // guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
+    // guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
+    // guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
+    // guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
+    // guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
+    // guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
+    // guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
+    // guess = mult(guess, threehalfs - mult(x >>> 1, mult(guess, guess)));
+    // result = guess;
 end
 
 endmodule
